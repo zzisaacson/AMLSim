@@ -456,7 +456,7 @@ public class AMLSim extends ParameterizedPaySim {
 		bene.deposit(amt);
 		float beneAfter = (float)bene.getBalance();
 
-		txs.addTransaction(step, desc, amt, origID, beneID, origBefore, origAfter, beneBefore, beneAfter, isSAR, alertID);
+		txs.addTransaction(step, desc, /*amt*/777, origID, beneID, origBefore, origAfter, beneBefore, beneAfter, isSAR, alertID);
 		diameter.addEdge(origID, beneID);
 	}
 

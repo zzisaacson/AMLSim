@@ -30,12 +30,17 @@ public class CashInModel extends CashModel {
         return false;
     }
 
-    private float computeAmount(){
-        if(this.account.isSAR()){
+    private float computeAmount() {
+        
+    	
+    	/* temp remove, put back
+    	if(this.account.isSAR()){
             return SUSPICIOUS_MIN + rand.nextFloat() * (SUSPICIOUS_MAX - SUSPICIOUS_MIN);
         }else{
             return NORMAL_MIN + rand.nextFloat() * (NORMAL_MAX - NORMAL_MIN);
-        }
+        }*/
+    	//throw new Exception("RIP");
+    	return 777;
     }
 
     @Override
