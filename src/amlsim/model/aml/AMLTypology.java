@@ -12,10 +12,16 @@
 
 package amlsim.model.aml;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
 import amlsim.AMLSim;
 import amlsim.Account;
 import amlsim.Alert;
 import amlsim.model.AbstractTransactionModel;
+
+import org.apache.commons.math3.distribution.ChiSquaredDistribution;
+
 
 /**
  * Suspicious transaction models
@@ -54,13 +60,13 @@ public abstract class AMLTypology extends AbstractTransactionModel {
         AMLTypology model;
         switch(modelID){
             case AML_FAN_OUT: model = new FanOutTypology(minAmount, maxAmount, startStep, endStep); break;
-            case AML_FAN_IN: model = new FanInTypology(minAmount, maxAmount, startStep, endStep); break;
+            case AML_FAN_IN: model = new FanInTypology(minAmount, maxAmount, startStep, endStep);break;
             case CYCLE: model = new CycleTypology(minAmount, maxAmount, startStep, endStep); break;
             case BIPARTITE: model = new BipartiteTypology(minAmount, maxAmount, startStep, endStep); break;
-            case STACK: model = new StackTypology(minAmount, maxAmount, startStep, endStep); break;
-            case RANDOM: model = new RandomTypology(minAmount, maxAmount, startStep, endStep); break;
+            case STACK: model = new StackTypology(minAmount, maxAmount, startStep, endStep);break;
+            case RANDOM: model = new RandomTypology(minAmount, maxAmount, startStep, endStep);break;
             case SCATTER_GATHER: model = new ScatterGatherTypology(minAmount, maxAmount, startStep, endStep); break;
-            case GATHER_SCATTER: model = new GatherScatterTypology(minAmount, maxAmount, startStep, endStep); break;
+            case GATHER_SCATTER: model = new GatherScatterTypology(minAmount, maxAmount, startStep, endStep);break;
             default: throw new IllegalArgumentException("Unknown typology model ID: " + modelID);
         }
         model.setParameters(minAmount, startStep, endStep);
@@ -151,6 +157,30 @@ public abstract class AMLTypology extends AbstractTransactionModel {
      */
     float getRandomAmount(){
         return alert.getSimulator().random.nextFloat() * (maxAmount - minAmount) + minAmount;
+    }
+
+    float getChiSquaredAmount(){
+        final int degreesFreedom = 3;
+        final int max = 13;
+        final float delta =0.1f;
+
+        ChiSquaredDistribution chiDist = new ChiSquaredDistribution(degreesFreedom);
+        //HashMap<Double, Double> probs =new HashMap<Double, Double>();
+
+        float rand = (float)Math.random();
+        
+
+        float f=0;
+
+        while(f<max&&chiDist.cumulativeProbability(f)<rand)
+        {
+            f+=delta;
+        }
+        f-=0.1f;
+        //return minAmount;
+        return minAmount+10*f;
+
+       
     }
 
     /**

@@ -35,12 +35,27 @@ public class FanInTransactionModel extends AbstractTransactionModel {
         if(!isValidStep(step) || numOrigs == 0){
             return;
         }
+        
+
+        
         if(index >= numOrigs){
             index = 0;
         }
 
         Account orig = origs.get(index);
+
+
+        
+        
+
+
         float amount = orig.getModel().getTransactionAmount();
+
+
+        /*if(orig.getTxType(this.account).equalsIgnoreCase("check"))
+            amount=999;*/
+
+    
         sendTransaction(step, amount, orig, this.account);
         index++;
     }

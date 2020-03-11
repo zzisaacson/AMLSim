@@ -611,6 +611,7 @@ class TransactionGenerator:
         idx_max_period = None
         idx_bank = None
         idx_sar = None
+        idx_stat = None
 
         with open(alert_file, "r") as rf:
             reader = csv.reader(rf)
@@ -639,6 +640,8 @@ class TransactionGenerator:
                     idx_bank = i
                 elif k == "is_sar":  # SAR flag
                     idx_sar = i
+                elif k=="stat_type":
+                    idx_stat = i 
                 else:
                     logger.warning("Unknown column name in %s: %s" % (alert_file, k))
 
@@ -658,6 +661,7 @@ class TransactionGenerator:
                 max_period = parse_int(row[idx_max_period])
                 bank_id = row[idx_bank] if idx_bank is not None else ""
                 is_sar = parse_flag(row[idx_sar])
+                stat_type = parse_int(row[idx_stat])
 
                 if typology_name not in self.alert_types:
                     logger.warning("Pattern type name (%s) must be one of %s"
@@ -667,13 +671,17 @@ class TransactionGenerator:
                 for i in range(num_patterns):
                     num_accts = random.randrange(min_accts, max_accts + 1)
                     init_amount = random.uniform(min_amount, max_amount)
+                    if(stat_type==1):
+                        init_amount=min_amount
+
+                    
                     period = random.randrange(min_period, max_period + 1)
-                    self.add_aml_typology(is_sar, typology_name, num_accts, init_amount, period, bank_id, schedule)
+                    self.add_aml_typology(is_sar, typology_name, num_accts, init_amount, period, stat_type, bank_id, schedule)
                     count += 1
                     if count % 1000 == 0:
                         logger.info("Created %d alerts" % count)
 
-    def add_aml_typology(self, is_sar, typology_name, num_accounts, init_amount, period, bank_id="", schedule=1):
+    def add_aml_typology(self, is_sar, typology_name, num_accounts, init_amount, period, statType, bank_id="", schedule=1):
         """Add an AML typology transaction set
         :param is_sar: Whether the alerted transaction set is SAR (True) or false-alert (False)
         :param typology_name: Name of pattern type
@@ -698,7 +706,7 @@ class TransactionGenerator:
         # Create subgraph structure with transaction attributes
         model_id = self.alert_types[typology_name]  # alert model ID
         sub_g = nx.MultiDiGraph(model_id=model_id, reason=typology_name, scheduleID=schedule,
-                                start=start_date, end=end_date)  # Transaction subgraph for a typology
+                                start=start_date, end=end_date, stat_type=statType)  # Transaction subgraph for a typology
 
         # Set bank ID attribute to a member account
         def add_node(_n, _bank_id):
@@ -1046,7 +1054,7 @@ class TransactionGenerator:
         with open(alert_member_file, "w") as wf:
             writer = csv.writer(wf)
             base_attrs = ["alertID", "reason", "accountID", "isMain", "isSAR", "modelID",
-                          "minAmount", "maxAmount", "startStep", "endStep", "scheduleID", "bankID"]
+                          "minAmount", "maxAmount", "startStep", "endStep", "scheduleID", "bankID","statType"]
             writer.writerow(base_attrs + self.attr_names)
             for gid, sub_g in self.alert_groups.items():
                 main_id = sub_g.graph[MAIN_ACCT_KEY]
@@ -1055,6 +1063,7 @@ class TransactionGenerator:
                 reason = sub_g.graph["reason"]
                 start = sub_g.graph["start"]
                 end = sub_g.graph["end"]
+                stat_type= sub_g.graph["stat_type"]
                 for n in sub_g.nodes():
                     is_main = "true" if n == main_id else "false"
                     is_sar = "true" if sub_g.graph[IS_SAR_KEY] else "false"
@@ -1064,7 +1073,7 @@ class TransactionGenerator:
                     max_step = end
                     bank_id = sub_g.node[n]["bank_id"]
                     values = [gid, reason, n, is_main, is_sar, model_id, min_amt, max_amt,
-                              min_step, max_step, schedule_id, bank_id]
+                              min_step, max_step, schedule_id, bank_id, stat_type]
                     prop = self.g.node[n]
                     for attr_name in self.attr_names:
                         values.append(prop[attr_name])

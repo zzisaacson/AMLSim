@@ -7,7 +7,6 @@ package amlsim.model.aml;
 import amlsim.Account;
 
 import java.util.*;
-
 /**
  * The main account distributes money to multiple members
  */
@@ -78,11 +77,23 @@ public class FanOutTypology extends AMLTypology {
         }
         long alertID = alert.getAlertID();
         boolean isSAR = alert.isSAR();
-        float amount = getRandomAmount();
+
+        float amount = 0;
+
+      
+
 
         for(int i = 0; i< beneList.size(); i++){
             if(steps[i] == step){
                 Account bene = beneList.get(i);
+                switch(orig.statType())
+                {
+                    case 0: amount = getRandomAmount(); break;
+                    case 1: amount = getChiSquaredAmount(); break;
+                    default: System.err.println("Unrecognized stat type");break;
+                }
+
+        
                 sendTransaction(step, amount, orig, bene, isSAR, alertID);
             }
         }

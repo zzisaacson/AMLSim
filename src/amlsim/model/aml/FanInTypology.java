@@ -79,11 +79,29 @@ public class FanInTypology extends AMLTypology {
     public void sendTransactions(long step, Account acct){
         long alertID = alert.getAlertID();
         boolean isSAR = alert.isSAR();
-        float amount = getRandomAmount();
+
+        float amount = 0;
+
+        //Zero is random (normal distribution)
+        //1 is chi squared distribution
+        
+
+        
+        
 
         for(int i = 0; i< origList.size(); i++){
             if(steps[i] == step){
                 Account orig = origList.get(i);
+               
+
+                //Should probably be orig.statType
+                switch(bene.statType())// only bene to get chi squared curve in output
+                {
+                    case 0: amount = getRandomAmount(); break;
+                    case 1: amount = getChiSquaredAmount(); break;
+                    default: System.err.println("Unrecognized stat type");break;
+                }
+
                 sendTransaction(step, amount, orig, bene, isSAR, alertID);
             }
         }

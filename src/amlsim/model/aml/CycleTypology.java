@@ -101,6 +101,7 @@ public class CycleTypology extends AMLTypology {
                 // Update the next transaction amount
                 float margin = amount * marginRatio;
                 amount = Math.max(amount - margin, minAmount);
+                //amount =200;
             }
         }
     }

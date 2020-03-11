@@ -27,6 +27,7 @@ public class Account extends Client implements Steppable {
 	private int numSAROrig = 0;  // Number of SAR originator accounts
 	private int numSARBene = 0;  // Number of SAR beneficiary accounts
 	private String bankID = "";  // Bank ID
+	private int statType = 0;
 
     private Account prevOrig = null;  // Previous originator account
 	List<Alert> alerts = new ArrayList<>();
@@ -67,7 +68,7 @@ public class Account extends Client implements Steppable {
 			case AbstractTransactionModel.FAN_IN: this.model = new FanInTransactionModel(); break;
 			case AbstractTransactionModel.MUTUAL: this.model = new MutualTransactionModel(); break;
 			case AbstractTransactionModel.FORWARD: this.model = new ForwardTransactionModel(); break;
-			case AbstractTransactionModel.PERIODICAL: this.model = new PeriodicalTransactionModel(); break;
+			case AbstractTransactionModel.PERIODICAL: this.model = new PeriodicalTransactionModel();break;
 			default: System.err.println("Unknown model ID: " + modelID); this.model = new EmptyModel(); break;
 		}
 		this.model.setAccount(this);
@@ -80,6 +81,7 @@ public class Account extends Client implements Steppable {
 		this.cashOutModel = new CashOutModel();
 		this.cashOutModel.setAccount(this);
 		this.cashOutModel.setParameters(interval, initBalance, start, end);
+
 	}
 
 	/**
@@ -114,6 +116,15 @@ public class Account extends Client implements Steppable {
 
 	void setSAR(boolean flag){
 		this.isSAR = flag;
+	}
+
+	void setStatType(int type){
+		this.statType=type;
+	}
+
+	public int statType()
+	{
+		return statType;
 	}
 
 	public boolean isSAR(){

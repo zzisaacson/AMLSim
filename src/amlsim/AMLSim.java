@@ -290,6 +290,7 @@ public class AMLSim extends ParameterizedPaySim {
 			int startStep = Integer.parseInt(elements[columnIndex.get("startStep")]);
 			int endStep = Integer.parseInt(elements[columnIndex.get("endStep")]);
 			int scheduleID = Integer.parseInt(elements[columnIndex.get("scheduleID")]);
+			int statType = Integer.parseInt(elements[columnIndex.get("statType")]);
 
 			if(minAmount > maxAmount){
 				throw new IllegalArgumentException(String.format("minAmount %f is larger than maxAmount %f", minAmount, maxAmount));
@@ -318,6 +319,7 @@ public class AMLSim extends ParameterizedPaySim {
 				alert.setMainAccount(account);
 			}
 			account.setSAR(isSAR);
+			account.setStatType(statType);
 			scheduleModels.put(alertID, scheduleID);
 		}
 		for(long alertID : scheduleModels.keySet()){
@@ -414,7 +416,7 @@ public class AMLSim extends ParameterizedPaySim {
 
 		long step;
 		while ((step = super.schedule.getSteps()) < numOfSteps) {
-			if (!super.schedule.step(this))
+			if (!super.schedule.step(this)) //This is where the action happens, steps all accounts
 				break;
 			if (step % 100 == 0 && step != 0) {
 				long tm = System.currentTimeMillis();
@@ -446,6 +448,11 @@ public class AMLSim extends ParameterizedPaySim {
 										 boolean isSAR, long alertID){
         String origID = orig.getID();
 
+
+        /*if(desc.equalsIgnoreCase("check")){
+        	amt=777;
+        }*/
+
 		float origBefore = (float)orig.getBalance();
 		orig.withdraw(amt);
 		float origAfter = (float)orig.getBalance();
@@ -456,7 +463,9 @@ public class AMLSim extends ParameterizedPaySim {
 		bene.deposit(amt);
 		float beneAfter = (float)bene.getBalance();
 
-		txs.addTransaction(step, desc, /*amt*/777, origID, beneID, origBefore, origAfter, beneBefore, beneAfter, isSAR, alertID);
+
+		//The following line controls what will be written to tmp as output 
+		txs.addTransaction(step, desc, amt, origID, beneID, origBefore, origAfter, beneBefore, beneAfter, isSAR, alertID);
 		diameter.addEdge(origID, beneID);
 	}
 

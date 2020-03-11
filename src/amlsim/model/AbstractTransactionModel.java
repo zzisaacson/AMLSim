@@ -44,6 +44,9 @@ public abstract class AbstractTransactionModel {
         // Each transaction amount should be independent from the current balance
 //        float ratio = ModelParameters.generateAmountRatio();
 //        return AMLSim.getSimProp().getNormalBaseTxAmount() * ratio;
+        
+
+        //return 777;
         return AMLSim.getSimProp().getNormalBaseTxAmount();
     }
 
