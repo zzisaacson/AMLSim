@@ -173,4 +173,8 @@ public abstract class AbstractTransactionModel {
         this.sendTransaction(step, amount, this.account, dest);
     }
 
+    public float getBalance(){
+        return balance;
+    }
+
 }

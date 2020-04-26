@@ -94,6 +94,7 @@ class Schema:
             self.acct_id_idx = None
             self.acct_name_idx = None
             self.acct_balance_idx = None
+            self.acct_country_idx=None
             self.acct_start_idx = None
             self.acct_end_idx = None
             self.acct_sar_idx = None
@@ -219,12 +220,16 @@ class Schema:
                 self.acct_start_idx = idx
             elif d_type == "end_time":
                 self.acct_end_idx = idx
+            elif d_type == "country":
+                self.acct_country_idx = idx
             elif d_type == "sar_flag":
                 self.acct_sar_idx = idx
             elif d_type == "model_id":
                 self.acct_model_idx = idx
             elif d_type == "bank_id":
                 self.acct_bank_idx = idx
+
+            self.acct_country_idx=17 #Hard coded TODO fix
 
         # Transaction list
         for idx, col in enumerate(tx_data):
@@ -409,7 +414,7 @@ class Schema:
         dt = self._base_date + datetime.timedelta(num_days)
         return dt.isoformat() + "Z"  # UTC
 
-    def get_acct_row(self, acct_id, acct_name, init_balance, start_str, end_str, is_sar, model_id, bank_id, **attr):
+    def get_acct_row(self, acct_id, acct_name, init_balance, start_str, end_str,country, is_sar, model_id, bank_id, **attr):
         row = list(self.acct_defaults)
         row[self.acct_id_idx] = acct_id
         row[self.acct_name_idx] = acct_name
@@ -428,6 +433,9 @@ class Schema:
         except ValueError:  # If failed, keep the default value
             pass
 
+
+
+        row[self.acct_country_idx]=country
         row[self.acct_sar_idx] = is_sar
         row[self.acct_model_idx] = model_id
         row[self.acct_bank_idx] = bank_id
@@ -662,6 +670,7 @@ class LogConverter:
         balance_idx = indices["INIT_BALANCE"]
         start_idx = indices["START_DATE"]
         end_idx = indices["END_DATE"]
+        country_idx = indices["COUNTRY"]
         type_idx = indices["ACCOUNT_TYPE"]
         sar_idx = indices["IS_SAR"]
         model_idx = indices["TX_BEHAVIOR_ID"]
@@ -676,12 +685,13 @@ class LogConverter:
             balance = row[balance_idx]
             start = row[start_idx]
             end = row[end_idx]
+            country = row[country_idx]
             acct_type = row[type_idx]
             acct_sar = row[sar_idx]
             acct_model = row[model_idx]
             bank_id = row[bank_idx]
             attr = {name: row[index] for name, index in indices.items()}
-            output_row = self.schema.get_acct_row(acct_id, acct_name, balance, start, end,
+            output_row = self.schema.get_acct_row(acct_id, acct_name, balance, start, end, country,
                                                   acct_sar, acct_model, bank_id, **attr)
             acct_writer.writerow(output_row)
             self.org_types[acct_id] = acct_type

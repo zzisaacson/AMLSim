@@ -48,6 +48,8 @@ public class AMLSim extends ParameterizedPaySim {
 	private static Diameter diameter;
 	private boolean computeDiameter = false;
 
+	public static boolean delayedAcctsJoin = true; //TODO: Put as a config option
+
 
 	private AMLSim(long seed) {
 		super(seed);

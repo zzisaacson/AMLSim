@@ -37,7 +37,7 @@
   },
   "input": {
     "directory": "paramFiles/10K",
-    "schema": "schema.json",
+    "schema": "schemaBankFormat.json",
     "accounts": "accounts.csv",
     "alert_patterns": "alertPatterns.csv",
     "degree": "degree.csv",

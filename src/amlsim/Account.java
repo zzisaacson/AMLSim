@@ -61,6 +61,7 @@ public class Account extends Client implements Steppable {
 		this.id = id;
 		this.startStep = start;
 		this.endStep = end;
+		//System.out.println("Start="+start+" End="+end);
 
 		switch(modelID){
 			case AbstractTransactionModel.SINGLE: this.model = new SingleTransactionModel(); break;
@@ -230,6 +231,12 @@ public class Account extends Client implements Steppable {
 		if(currentStep < start || end < currentStep){
 			return;  // Skip transactions if this account is not active
 		}
+		if(((AMLSim)state).delayedAcctsJoin&&currentStep==start)
+		{
+			((AMLSim)state).handleTransaction(currentStep, "Initial_Deposit", model.getBalance(), this, this, false, -1);//consider, maybe shouldnt be false?
+			return;
+		}
+		
 		handleAction(state);
 	}
 

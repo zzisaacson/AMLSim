@@ -397,7 +397,7 @@ class TransactionGenerator:
             idx_lon = name2idx["lon"]
             idx_lat = name2idx["lat"]
 
-            default_country = "US"
+            default_country = "US" 
             default_acct_type = "I"
 
             count = 0
@@ -530,6 +530,8 @@ class TransactionGenerator:
         :param attr: Optional attributes
         :return:
         """
+        #print("YEET adding acct with start="+str(start))
+
         if bank_id is None:
             bank_id = self.default_bank_id
 
