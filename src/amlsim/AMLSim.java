@@ -5,6 +5,7 @@ import amlsim.model.cash.CashInModel;
 import amlsim.model.cash.CashOutModel;
 import amlsim.model.aml.AMLTypology;
 import amlsim.stat.Diameter;
+
 import paysim.*;
 
 import java.io.*;
@@ -48,7 +49,7 @@ public class AMLSim extends ParameterizedPaySim {
 	private static Diameter diameter;
 	private boolean computeDiameter = false;
 
-	public static boolean delayedAcctsJoin = true; //TODO: Put as a config option
+	public static boolean delayedAcctsJoin = false; //TODO: Put as a config option
 
 
 	private AMLSim(long seed) {
@@ -248,7 +249,7 @@ public class AMLSim extends ParameterizedPaySim {
 		}
 		int numAccounts = idMap.size();
 		logger.info("Number of total accounts: " + numAccounts);
-		diameter = new Diameter(numAccounts);
+		diameter = new Diameter(numAccounts+ branches.size());
 
 		reader.close();
 	}
@@ -360,7 +361,7 @@ public class AMLSim extends ParameterizedPaySim {
 
 		// TODO: Load actions (transaction types) from the parameter file
         this.actions.add("TRANSFER");
-//		this.actions.add("CASH_IN");
+		this.actions.add("CASH_IN");
 //		this.actions.add("CASH_OUT");
 //		this.actions.add("DEBIT");
 //		this.actions.add("DEPOSIT");
@@ -448,13 +449,7 @@ public class AMLSim extends ParameterizedPaySim {
 
 	public static void handleTransaction(long step, String desc, float amt, Account orig, Account bene,
 										 boolean isSAR, long alertID){
-        String origID = orig.getID();
-
-
-        /*if(desc.equalsIgnoreCase("check")){
-        	amt=777;
-        }*/
-
+        String origID = orig.getID();								
 		float origBefore = (float)orig.getBalance();
 		orig.withdraw(amt);
 		float origAfter = (float)orig.getBalance();

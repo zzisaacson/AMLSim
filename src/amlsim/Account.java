@@ -233,7 +233,8 @@ public class Account extends Client implements Steppable {
 		}
 		if(((AMLSim)state).delayedAcctsJoin&&currentStep==start)
 		{
-			((AMLSim)state).handleTransaction(currentStep, "Initial_Deposit", model.getBalance(), this, this, false, -1);//consider, maybe shouldnt be false?
+			cashInModel.sendTransaction(currentStep, model.getBalance());
+			//((AMLSim)state).handleTransaction(currentStep, "CASH_IN", model.getBalance(), this, this, false, -1);//consider, maybe shouldnt be false?
 			return;
 		}
 		

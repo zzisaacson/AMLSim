@@ -45,8 +45,6 @@ public abstract class AbstractTransactionModel {
 //        float ratio = ModelParameters.generateAmountRatio();
 //        return AMLSim.getSimProp().getNormalBaseTxAmount() * ratio;
         
-
-        //return 777;
         return AMLSim.getSimProp().getNormalBaseTxAmount();
     }
 

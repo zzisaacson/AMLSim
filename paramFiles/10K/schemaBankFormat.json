@@ -86,6 +86,7 @@
       {
         "name": "country",
         "valueType": "string",
+        "dataType":"country",
         "defaultValue": "US"
       },
       {
@@ -138,15 +139,9 @@
         "dataType": "transaction_id"
       },
       {
-        "name": "count",
-        "valueType": "string",
-        "dataType": "count",
-        "defaultValue": "59139"
-      },
-      {
         "name": "file_transmit_date",
-        "valueType": "date",
-        "dataType": "file_transmit_date"
+        "valueType": "dateM",
+        "dataType": "timestamp"
       },
       {
         "name": "galileo_account_id",
@@ -196,7 +191,7 @@
       },
       {
         "name": "post_date",
-        "valueType": "date",
+        "valueType": "dateM",
         "dataType": "post_date"
       },
       {
@@ -237,7 +232,7 @@
         "name": "transaction_currency_code",
         "valueType": "string",
         "dataType": "transaction_currency_code",
-        "defaultValue": "null"
+        "defaultValue": "USD"
       },
       {
         "name": "transaction_date_time",
@@ -252,7 +247,7 @@
       },
       {
         "name": "work_of_date",
-        "valueType": "date",
+        "valueType": "dateM",
         "dataType": "work_of_date"
       },
 

@@ -12,7 +12,6 @@ public class FanInTransactionModel extends AbstractTransactionModel {
     private int index = 0;
 
     public void setParameters(int interval, float balance, long start, long end){
-        //System.out.println("SETTING FAN IN PARAMETERS & interval="+interval);
         super.setParameters(interval, balance, start, end);
         if(this.startStep < 0){  // decentralize the first transaction step
             this.startStep = generateStartStep(interval);
@@ -53,8 +52,7 @@ public class FanInTransactionModel extends AbstractTransactionModel {
         float amount = orig.getModel().getTransactionAmount();
 
 
-        /*if(orig.getTxType(this.account).equalsIgnoreCase("check"))
-            amount=999;*/
+
 
     
         sendTransaction(step, amount, orig, this.account);

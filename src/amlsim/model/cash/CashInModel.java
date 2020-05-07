@@ -33,19 +33,17 @@ public class CashInModel extends CashModel {
     private float computeAmount() {
         
     	
-    	//temp remove, put back
     	if(this.account.isSAR()){
             return SUSPICIOUS_MIN + rand.nextFloat() * (SUSPICIOUS_MAX - SUSPICIOUS_MIN);
         }else{
             return NORMAL_MIN + rand.nextFloat() * (NORMAL_MAX - NORMAL_MIN);
         }
-    	//throw new Exception("RIP");
-    	//return 777;
+    	
     }
 
     @Override
     public String getType() {
-        return "CASH-IN";
+        return "CASH_IN";
     }
 
     @Override
@@ -53,8 +51,13 @@ public class CashInModel extends CashModel {
         if(isNextStep(step)){
             Branch branch = account.getBranch();
             float amount = computeAmount();
-            System.out.println("YES SIR JKBASJKBSAHJKSJKKJSAJKNSA");
-            sendTransaction(step, amount, account, branch, "CASH-IN");
+            sendTransaction(step, amount, account, branch, "CASH_IN");
         }
+    }
+    //@Override
+    public void sendTransaction(long step, float amount){ 
+        Branch branch = account.getBranch();
+        sendTransaction(step, amount, account, branch, "CASH_IN");
+    
     }
 }

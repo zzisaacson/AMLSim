@@ -352,6 +352,7 @@ class TransactionGenerator:
         """Load and add account vertices from a CSV file
         """
         acct_file = os.path.join(self.input_dir, self.account_file)
+        print("ACC FILE:"+acct_file)
         if self.is_aggregated:
             self.load_account_list_param(acct_file)
         else:
@@ -663,7 +664,10 @@ class TransactionGenerator:
                 max_period = parse_int(row[idx_max_period])
                 bank_id = row[idx_bank] if idx_bank is not None else ""
                 is_sar = parse_flag(row[idx_sar])
-                stat_type = parse_int(row[idx_stat])
+                if idx_stat!=None:
+                    stat_type = parse_int(row[idx_stat])
+                else:
+                    stat_type=0
 
                 if typology_name not in self.alert_types:
                     logger.warning("Pattern type name (%s) must be one of %s"

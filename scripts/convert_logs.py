@@ -229,8 +229,6 @@ class Schema:
             elif d_type == "bank_id":
                 self.acct_bank_idx = idx
 
-            self.acct_country_idx=17 #Hard coded TODO fix
-
         # Transaction list
         for idx, col in enumerate(tx_data):
             name = col["name"]
@@ -411,6 +409,18 @@ class Schema:
             num_days = int(_days)
         except ValueError:
             return ""
+        dt = self._base_date + datetime.timedelta(num_days+random())#added random
+        return dt.isoformat() + "Z"  # UTC
+    
+    def days2dateNoTime(self, _days):
+        """Get date as ISO 8601 format from days from the "base_date". If failed, return an empty string.
+        :param _days: Days from the "base_date"
+        :return: Date as ISO 8601 format
+        """
+        try:
+            num_days = int(_days)
+        except ValueError:
+            return ""
         dt = self._base_date + datetime.timedelta(num_days)
         return dt.isoformat() + "Z"  # UTC
 
@@ -434,8 +444,8 @@ class Schema:
             pass
 
 
-
-        row[self.acct_country_idx]=country
+        if(self.acct_country_idx!=None):
+            row[self.acct_country_idx]=country
         row[self.acct_sar_idx] = is_sar
         row[self.acct_model_idx] = model_id
         row[self.acct_bank_idx] = bank_id
@@ -468,7 +478,9 @@ class Schema:
 
         for idx, v_type in enumerate(self.tx_types):
             if v_type == "date":
-                row[idx] = self.days2date(row[idx])  # convert days to date
+                row[idx] = self.days2date(row[idx])  # convert days to date w/random time
+            if v_type == "dateM":
+                row[idx] = self.days2dateNoTime(_timestamp)
         return row
 
     def get_alert_acct_row(self, _alert_id, _reason, _acct_id, _acct_name, _is_sar,
