@@ -89,7 +89,7 @@ public class FanOutTypology extends AMLTypology {
                 switch(orig.statType())
                 {
                     case 0: amount = getRandomAmount(); break;
-                    case 1: amount = getChiSquaredAmount(); break;
+                    case 1: amount = orig.getChiSquaredAmount(); break;
                     default: System.err.println("Unrecognized stat type");break;
                 }
 

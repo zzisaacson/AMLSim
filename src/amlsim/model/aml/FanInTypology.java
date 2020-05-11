@@ -93,12 +93,11 @@ public class FanInTypology extends AMLTypology {
             if(steps[i] == step){
                 Account orig = origList.get(i);
                
-
-                //Should probably be orig.statType
-                switch(bene.statType())// only bene to get chi squared curve in output
+                //TODO: Decide if this should say bene or be orig.statType()
+                switch(orig.statType())
                 {
                     case 0: amount = getRandomAmount(); break;
-                    case 1: amount = getChiSquaredAmount(); break;
+                    case 1: amount = orig.getChiSquaredAmount(); break;
                     default: System.err.println("Unrecognized stat type");break;
                 }
 

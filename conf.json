@@ -36,9 +36,9 @@
     }
   },
   "input": {
-    "directory": "paramFiles/small8",
+    "directory": "paramFiles/10k",
     "schema": "schema.json",
-    "accounts": "accounts.csv",
+    "accounts": "accounts2.csv",
     "alert_patterns": "alertPatterns.csv",
     "degree": "degree.csv",
     "transaction_type": "transactionType.csv",

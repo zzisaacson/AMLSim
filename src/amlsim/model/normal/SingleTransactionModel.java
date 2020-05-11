@@ -41,7 +41,13 @@ public class SingleTransactionModel extends AbstractTransactionModel {
             index = 0;
         }
 
-        float amount = getTransactionAmount();
+        float amount =0f;
+        switch(this.account.statType())
+        {
+            case 0: amount = getTransactionAmount(); break;
+            case 1: amount = this.account.getChiSquaredAmount(); break;
+            default: System.err.println("Unrecognized stat type");break;
+        }
         long stepRange = this.endStep - this.startStep + 1;
         int numPerStep = numDests / (int)stepRange;
 

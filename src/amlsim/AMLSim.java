@@ -227,6 +227,14 @@ public class AMLSim extends ParameterizedPaySim {
 			int start = Integer.parseInt(elements[columnIndex.get("START_DATE")]);
 			int end = Integer.parseInt(elements[columnIndex.get("END_DATE")]);
 			String bankID = elements[columnIndex.get("BANK_ID")];
+			int stat_type = Integer.parseInt(elements[columnIndex.get("STAT_TYPE")]);
+			int df =0;
+			try{
+				df = Integer.parseInt(elements[columnIndex.get("DF")]);
+			}
+			catch(Exception e){
+				df=3;
+			}
 
 //			Map<String, String> extraValues = new HashMap<>();
 //			for(String column : extraColumns){
@@ -240,6 +248,9 @@ public class AMLSim extends ParameterizedPaySim {
 			}else{
 				account = new Account(accountID, modelID, normalTxInterval, initBalance, start, end, bankID);
 			}
+
+			account.setStatType(stat_type);
+			account.setDF(df);
 
 			int index = this.getClients().size();
 			account.setBranch(this.branches.get(index % this.numBranches));
@@ -295,6 +306,14 @@ public class AMLSim extends ParameterizedPaySim {
 			int scheduleID = Integer.parseInt(elements[columnIndex.get("scheduleID")]);
 			int statType = Integer.parseInt(elements[columnIndex.get("statType")]);
 
+			int df =0;
+			try{
+				df = Integer.parseInt(elements[columnIndex.get("DF")]);
+			}
+			catch(Exception e){
+				df=3;
+			}
+
 			if(minAmount > maxAmount){
 				throw new IllegalArgumentException(String.format("minAmount %f is larger than maxAmount %f", minAmount, maxAmount));
 			}
@@ -323,6 +342,7 @@ public class AMLSim extends ParameterizedPaySim {
 			}
 			account.setSAR(isSAR);
 			account.setStatType(statType);
+			account.setDF(df);
 			scheduleModels.put(alertID, scheduleID);
 		}
 		for(long alertID : scheduleModels.keySet()){

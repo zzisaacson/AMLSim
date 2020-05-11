@@ -26,7 +26,16 @@ public class ForwardTransactionModel extends AbstractTransactionModel {
     @Override
     public void sendTransaction(long step) {
 
-        float amount = getTransactionAmount();  // this.balance;
+        
+
+        float amount = 0;  // this.balance;
+
+        switch(this.account.statType())
+        {
+            case 0: amount = getTransactionAmount(); break;
+            case 1: amount = this.account.getChiSquaredAmount(); break;
+            default: System.err.println("Unrecognized stat type");break;
+        }
         List<Account> dests = this.account.getBeneList();
         int numDests = dests.size();
         if(numDests == 0){

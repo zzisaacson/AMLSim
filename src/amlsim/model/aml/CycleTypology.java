@@ -27,7 +27,8 @@ public class CycleTypology extends AMLTypology {
      * @param modelID Schedule model ID as integer
      */
     public void setParameters(int modelID){
-        amount = maxAmount;  // Initialize the transaction amount
+        amount = maxAmount;
+          
 
         List<Account> members = alert.getMembers();  // All members
         int length = members.size();  // Number of members (total transactions)
@@ -89,6 +90,18 @@ public class CycleTypology extends AMLTypology {
         int length = alert.getMembers().size();
         long alertID = alert.getAlertID();
         boolean isSAR = alert.isSAR();
+        try{
+            if(amount== maxAmount){//if this is the first transaction group being set
+                switch (alert.getMembers().get(0).statType()){ // Initialize the transaction amount
+                    case 0: amount = maxAmount; break;
+                    case 1: amount = getChiSquaredAmount(); break;
+                    default: System.err.println("Unrecognized stat type");break;
+                }
+            }
+        }
+        catch(Exception e){
+            //There are no other members in this cycle & no transactions will be sent
+        } 
 
         // Create cycle transactions
         for(int i=0; i<length; i++) {

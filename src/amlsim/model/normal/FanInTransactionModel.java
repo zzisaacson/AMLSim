@@ -45,11 +45,17 @@ public class FanInTransactionModel extends AbstractTransactionModel {
         Account orig = origs.get(index);
 
 
-        
-        
 
 
-        float amount = orig.getModel().getTransactionAmount();
+        float amount = 0;
+
+        switch(orig.statType())
+        {
+            case 0: amount = orig.getModel().getTransactionAmount(); break;
+            case 1: amount = orig.getChiSquaredAmount(); break;
+            default: System.err.println("Unrecognized stat type");break;
+        }
+
 
 
 

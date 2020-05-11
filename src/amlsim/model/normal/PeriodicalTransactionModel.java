@@ -41,7 +41,15 @@ public class PeriodicalTransactionModel extends AbstractTransactionModel {
         int eachCount = (numDests < totalCount) ? 1 : numDests / totalCount;
 
         for(int i=0; i<eachCount; i++) {
-            float amount = getTransactionAmount();  // this.balance;
+
+            float amount = 0;  // this.balance;
+            switch(this.account.statType())
+            {
+                case 0: amount = getTransactionAmount(); break;
+                case 1: amount = this.account.getChiSquaredAmount(); break;
+                default: System.err.println("Unrecognized stat type");break;
+            }
+
             Account dest = this.account.getBeneList().get(index);
             this.sendTransaction(step, amount, dest);
             index++;

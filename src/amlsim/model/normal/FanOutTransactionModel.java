@@ -40,7 +40,12 @@ public class FanOutTransactionModel extends AbstractTransactionModel {
             index = 0;
         }
 
-        float amount = getTransactionAmount();
+        float amount=0;
+        switch(this.account.statType()){
+            case 0: amount = getTransactionAmount(); break;
+            case 1: amount = this.account.getChiSquaredAmount(); break;
+            default: System.err.println("Unrecognized stat type");break;
+        }
         Account bene = beneList.get(index);
 
         amount = ModelParameters.adjustAmount(account, bene, amount);

@@ -9,6 +9,8 @@ import sim.engine.SimState;
 import sim.engine.Steppable;
 import java.util.*;
 
+import org.apache.commons.math3.distribution.ChiSquaredDistribution;
+
 public class Account extends Client implements Steppable {
 
     protected String id;
@@ -28,6 +30,7 @@ public class Account extends Client implements Steppable {
 	private int numSARBene = 0;  // Number of SAR beneficiary accounts
 	private String bankID = "";  // Bank ID
 	private int statType = 0;
+	private int df =3; //default to 3 degrees of freedom unless params say otherwise
 
     private Account prevOrig = null;  // Previous originator account
 	List<Alert> alerts = new ArrayList<>();
@@ -121,6 +124,14 @@ public class Account extends Client implements Steppable {
 
 	void setStatType(int type){
 		this.statType=type;
+	}
+
+	void setDF(int df){
+		this.df=df;
+	}
+
+	public int df(){
+		return df;
 	}
 
 	public int statType()
@@ -319,4 +330,25 @@ public class Account extends Client implements Steppable {
 	public void setStepHandler(CurrentStepHandler stepHandler) {
 		this.stepHandler = stepHandler;
 	}
+
+	public float getChiSquaredAmount(){
+        final int max = 13;
+        final float delta =0.1f;
+
+        ChiSquaredDistribution chiDist = new ChiSquaredDistribution(df);
+
+        float rand = (float)Math.random();
+        
+
+        float f=0;
+
+        while(f<max&&chiDist.cumulativeProbability(f)<rand)
+        {
+            f+=delta;
+        }
+        f-=0.1f;
+		
+        return AMLSim.getSimProp().getNormalBaseTxAmount()+(AMLSim.getSimProp().getNormalBaseTxAmount()/10)*f;
+	}
+       
 }

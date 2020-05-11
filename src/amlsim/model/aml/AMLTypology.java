@@ -160,12 +160,10 @@ public abstract class AMLTypology extends AbstractTransactionModel {
     }
 
     float getChiSquaredAmount(){
-        final int degreesFreedom = 3;
         final int max = 13;
         final float delta =0.1f;
 
-        ChiSquaredDistribution chiDist = new ChiSquaredDistribution(degreesFreedom);
-        //HashMap<Double, Double> probs =new HashMap<Double, Double>();
+        ChiSquaredDistribution chiDist = new ChiSquaredDistribution(this.account.df());
 
         float rand = (float)Math.random();
         
@@ -177,8 +175,7 @@ public abstract class AMLTypology extends AbstractTransactionModel {
             f+=delta;
         }
         f-=0.1f;
-        //return minAmount;
-        return minAmount+10*f;
+        return Math.min(maxAmount,minAmount+((maxAmount-minAmount)/10)*f);
 
        
     }

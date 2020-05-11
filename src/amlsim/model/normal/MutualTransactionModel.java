@@ -35,7 +35,17 @@ public class MutualTransactionModel extends AbstractTransactionModel {
                 counterpart = origs.get(0);
             }
         }
-        float amount = getTransactionAmount();  // this.balance;
+        
+        float amount =0;  // this.balance;
+
+        switch(this.account.statType())
+        {
+            case 0: amount = getTransactionAmount(); 
+            //System.out.println("UH OH SPAGET");break;
+            case 1: amount = this.account.getChiSquaredAmount(); break;
+            default: System.err.println("Unrecognized stat type");break;
+        }
+
         if(!this.account.getBeneList().contains(counterpart)) {
             this.account.addBeneAcct(counterpart);    // Add a new destination
         }
