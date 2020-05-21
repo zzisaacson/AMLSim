@@ -228,12 +228,25 @@ public class AMLSim extends ParameterizedPaySim {
 			int end = Integer.parseInt(elements[columnIndex.get("END_DATE")]);
 			String bankID = elements[columnIndex.get("BANK_ID")];
 			int stat_type = Integer.parseInt(elements[columnIndex.get("STAT_TYPE")]);
-			int df =0;
+			char account_type = elements[columnIndex.get("ACCOUNT_TYPE")].charAt(0);
+			int df =-1;
 			try{
 				df = Integer.parseInt(elements[columnIndex.get("DF")]);
 			}
 			catch(Exception e){
-				df=3;
+			}
+			float mean =-1f;
+			try{
+				mean = Float.parseFloat(elements[columnIndex.get("MEAN")]);
+			}
+			catch(Exception e){
+			}
+
+			float sd =-1f;
+			try{
+				sd = Float.parseFloat(elements[columnIndex.get("SD")]);
+			}
+			catch(Exception e){
 			}
 
 //			Map<String, String> extraValues = new HashMap<>();
@@ -250,7 +263,14 @@ public class AMLSim extends ParameterizedPaySim {
 			}
 
 			account.setStatType(stat_type);
-			account.setDF(df);
+			if(df>0)
+				account.setDF(df);
+			if(mean>0)
+				account.setMean(mean);
+			if(sd>0)
+				account.setSD(sd);
+			
+			account.setAcctType(account_type);
 
 			int index = this.getClients().size();
 			account.setBranch(this.branches.get(index % this.numBranches));
@@ -306,12 +326,25 @@ public class AMLSim extends ParameterizedPaySim {
 			int scheduleID = Integer.parseInt(elements[columnIndex.get("scheduleID")]);
 			int statType = Integer.parseInt(elements[columnIndex.get("statType")]);
 
-			int df =0;
+			int df =-1;
 			try{
-				df = Integer.parseInt(elements[columnIndex.get("DF")]);
+				df = Integer.parseInt(elements[columnIndex.get("df")]);
 			}
 			catch(Exception e){
-				df=3;
+			}
+
+			float mean =-1f;
+			try{
+				mean = Float.parseFloat(elements[columnIndex.get("mean")]);
+			}
+			catch(Exception e){
+			}
+
+			float sd =-1f;
+			try{
+				sd = Float.parseFloat(elements[columnIndex.get("sd")]);
+			}
+			catch(Exception e){
 			}
 
 			if(minAmount > maxAmount){
@@ -341,8 +374,14 @@ public class AMLSim extends ParameterizedPaySim {
 				alert.setMainAccount(account);
 			}
 			account.setSAR(isSAR);
-			account.setStatType(statType);
-			account.setDF(df);
+			if(statType>=0)
+				account.setStatType(statType);
+			if(df>0)
+				account.setDF(df);
+			if(mean>0)
+				account.setMean(mean);
+			if(sd>0)
+				account.setSD(sd);
 			scheduleModels.put(alertID, scheduleID);
 		}
 		for(long alertID : scheduleModels.keySet()){

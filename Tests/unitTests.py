@@ -136,7 +136,7 @@ class SimpleTest(unittest.TestCase):
         self.assertTrue(abs(actualMeanSAR-expectedMeanSAR)<(maxSAR-minSAR)/4)
   
 if __name__ == '__main__': 
-    confFile="conf1.json"
+    confFile="conf2.json"
     with open("Tests/"+confFile, "r") as rf:
         conf = json.load(rf)
 

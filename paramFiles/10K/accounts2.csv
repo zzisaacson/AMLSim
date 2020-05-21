@@ -1,6 +1,7 @@
-count,min_balance,max_balance,country,business_type,model,bank_id,stat_type
-2000,50000,100000,US,I,1,bank,1
-2000,50000,100000,US,I,2,bank,1
-2000,50000,100000,US,I,3,bank,1
-2000,50000,100000,US,I,4,bank,1
-2000,50000,100000,US,I,5,bank,1
+count,min_balance,max_balance,country,business_type,model,bank_id,stat_type,mean,sd
+2000,50000,100000,US,I,1,bank,2,150,10
+2000,50000,100000,US,I,2,bank,2,150,10
+2000,50000,100000,US,I,3,bank,2,150,10
+2000,50000,100000,US,I,4,bank,2,150,10
+1500,50000,100000,US,I,5,bank,2,150,10
+500,50000,100000,US,M,6,bank,2,1000,100

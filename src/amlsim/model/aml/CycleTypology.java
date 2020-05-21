@@ -95,6 +95,7 @@ public class CycleTypology extends AMLTypology {
                 switch (alert.getMembers().get(0).statType()){ // Initialize the transaction amount
                     case 0: amount = maxAmount; break;
                     case 1: amount = getChiSquaredAmount(); break;
+                    case 2: amount = getNormalDistAmount(); break;
                     default: System.err.println("Unrecognized stat type");break;
                 }
             }

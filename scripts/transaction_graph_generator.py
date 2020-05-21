@@ -24,7 +24,8 @@ IS_SAR_KEY = "is_sar"
 DEFAULT_MARGIN_RATIO = 0.1  # Each member will keep this ratio of the received amount
 
 writeDF=False #whether or not DF (degrees freedom) need be written to the log files
-
+writeMean=False
+writeSD=False
 
 # Utility functions parsing values
 def parse_int(value):
@@ -457,6 +458,8 @@ class TransactionGenerator:
         idx_bank = None  # Bank ID
         idx_stat_type = None
         idx_df=None
+        idx_mean=None
+        idx_sd=None
 
         with open(acct_file, "r") as rf:
             reader = csv.reader(rf)
@@ -486,6 +489,12 @@ class TransactionGenerator:
                 elif k == "df": #degrees of freedom applicable to stat_type= 1 => chi^2 only
                     idx_df = i
                     self.writeDF=True
+                elif k == "mean": 
+                    idx_mean = i
+                    self.writeMean=True
+                elif k == "sd": 
+                    idx_sd = i
+                    self.writeSD=True
                 else:
                     logger.warning("Unknown column name in %s: %s" % (acct_file, k))
 
@@ -504,11 +513,13 @@ class TransactionGenerator:
                 bank_id = row[idx_bank] if idx_bank is not None else self.default_bank_id
                 stat_id = row[idx_stat_type] if idx_stat_type is not None else 0
                 df_id = int(row[idx_df]) if idx_df is not None else 3 #default to 3 degrees of freedom
+                mean_id = int(row[idx_mean]) if idx_mean is not None else -1
+                sd_id = int(row[idx_sd]) if idx_sd is not None else -1
 
 
                 for i in range(num):
                     init_balance = random.uniform(min_balance, max_balance)  # Generate amount
-                    self.add_account(acct_id, init_balance, start_day, end_day, country, business, model_id, stat_id, df_id, bank_id)
+                    self.add_account(acct_id, init_balance, start_day, end_day, country, business, model_id, stat_id, df_id, mean_id, sd_id, bank_id)
                     acct_id += 1
 
         self.num_accounts = acct_id
@@ -531,7 +542,7 @@ class TransactionGenerator:
             dst = nodes[dst_i]
             self.add_transaction(src, dst)  # Add edges to transaction graph
 
-    def add_account(self, acct_id, init_balance, start, end, country, business, model_id, stat_type, df, bank_id=None, **attr):
+    def add_account(self, acct_id, init_balance, start, end, country, business, model_id, stat_type, df, mean, sd, bank_id=None, **attr):
         """Add an account vertex
         :param acct_id: Account ID
         :param init_balance: Initial amount
@@ -552,7 +563,8 @@ class TransactionGenerator:
         if self.check_account_absent(acct_id):
             self.g.add_node(acct_id, label="account", init_balance=init_balance, start=start, end=end,
                             country=country, business=business, is_sar=False,
-                            model_id=model_id, bank_id=bank_id, stat_type=stat_type, df=df,**attr)
+                            model_id=model_id, bank_id=bank_id, stat_type=stat_type, df=df,
+                            mean=mean, sd=sd, **attr)
             self.bank_to_accts[bank_id].add(acct_id)
             self.acct_to_bank[acct_id] = bank_id
 
@@ -628,6 +640,8 @@ class TransactionGenerator:
         idx_sar = None
         idx_stat = None
         idx_df= None
+        idx_mean= None
+        idx_sd= None
 
         with open(alert_file, "r") as rf:
             reader = csv.reader(rf)
@@ -661,6 +675,12 @@ class TransactionGenerator:
                 elif k=="df":
                     self.writeDF=True
                     idx_df = i 
+                elif k=="mean":
+                    self.writeMean=True
+                    idx_mean = i 
+                elif k=="sd":
+                    self.writeSD=True
+                    idx_sd = i 
                 else:
                     logger.warning("Unknown column name in %s: %s" % (alert_file, k))
 
@@ -686,6 +706,8 @@ class TransactionGenerator:
                     stat_type=0
 
                 df_id = int(row[idx_df]) if idx_df is not None else 3
+                mean = int(row[idx_mean]) if idx_mean is not None else -1
+                sd = int(row[idx_sd]) if idx_sd is not None else -1
 
                 if typology_name not in self.alert_types:
                     logger.warning("Pattern type name (%s) must be one of %s"
@@ -700,12 +722,12 @@ class TransactionGenerator:
 
                     
                     period = random.randrange(min_period, max_period + 1)
-                    self.add_aml_typology(is_sar, typology_name, num_accts, init_amount, period, stat_type, df_id, bank_id, schedule)
+                    self.add_aml_typology(is_sar, typology_name, num_accts, init_amount, period, stat_type, df_id,mean,sd, bank_id, schedule)
                     count += 1
                     if count % 1000 == 0:
                         logger.info("Created %d alerts" % count)
 
-    def add_aml_typology(self, is_sar, typology_name, num_accounts, init_amount, period, statType, df, bank_id="", schedule=1):
+    def add_aml_typology(self, is_sar, typology_name, num_accounts, init_amount, period, statType, df, mean, sd, bank_id="", schedule=1):
         """Add an AML typology transaction set
         :param is_sar: Whether the alerted transaction set is SAR (True) or false-alert (False)
         :param typology_name: Name of pattern type
@@ -730,7 +752,7 @@ class TransactionGenerator:
         # Create subgraph structure with transaction attributes
         model_id = self.alert_types[typology_name]  # alert model ID
         sub_g = nx.MultiDiGraph(model_id=model_id, reason=typology_name, scheduleID=schedule,
-                                start=start_date, end=end_date, stat_type=statType, df=df)  # Transaction subgraph for a typology
+                                start=start_date, end=end_date, stat_type=statType, df=df, mean=mean, sd=sd)  # Transaction subgraph for a typology
 
         # Set bank ID attribute to a member account
         def add_node(_n, _bank_id):
@@ -1038,6 +1060,10 @@ class TransactionGenerator:
                           "ACCOUNT_TYPE", "IS_SAR", "TX_BEHAVIOR_ID", "BANK_ID", "STAT_TYPE"]
             if self.writeDF:
                 base_attrs.append("DF")
+            if self.writeMean:
+                base_attrs.append("MEAN")
+            if self.writeSD:
+                base_attrs.append("SD")
         
             writer.writerow(base_attrs + self.attr_names)
             for n in self.g.nodes(data=True):
@@ -1056,6 +1082,10 @@ class TransactionGenerator:
                 values = [aid, cid, balance, start, end, country, business, is_sar, model_id, bank_id, stat_id]
                 if self.writeDF:
                     values.append(prop["df"])
+                if self.writeMean:
+                    values.append(prop["mean"])
+                if self.writeSD:
+                    values.append(prop["sd"])
                 for attr_name in self.attr_names:
                     values.append(prop[attr_name])
                 writer.writerow(values)
@@ -1087,6 +1117,10 @@ class TransactionGenerator:
                           "minAmount", "maxAmount", "startStep", "endStep", "scheduleID", "bankID","statType"]
             if self.writeDF:
                 base_attrs.append("df")
+            if self.writeMean:
+                base_attrs.append("mean")
+            if self.writeSD:
+                base_attrs.append("sd")
             writer.writerow(base_attrs + self.attr_names)
             for gid, sub_g in self.alert_groups.items():
                 main_id = sub_g.graph[MAIN_ACCT_KEY]
@@ -1096,9 +1130,17 @@ class TransactionGenerator:
                 start = sub_g.graph["start"]
                 end = sub_g.graph["end"]
                 stat_type= sub_g.graph["stat_type"]
+                if stat_type == 0:
+                    stat_type=-1
                 df =3
                 if self.writeDF:
                     df = sub_g.graph["df"]
+                mean = -1
+                if self.writeMean:
+                    mean = sub_g.graph["mean"]
+                sd = -1
+                if self.writeSD:
+                    sd = sub_g.graph["sd"]
                 for n in sub_g.nodes():
                     is_main = "true" if n == main_id else "false"
                     is_sar = "true" if sub_g.graph[IS_SAR_KEY] else "false"
@@ -1111,6 +1153,10 @@ class TransactionGenerator:
                               min_step, max_step, schedule_id, bank_id, stat_type]
                     if self.writeDF:
                         values.append(df)
+                    if self.writeMean:
+                        values.append(mean)
+                    if self.writeSD:
+                        values.append(sd)
                     prop = self.g.node[n]
                     for attr_name in self.attr_names:
                         values.append(prop[attr_name])
@@ -1145,6 +1191,7 @@ class TransactionGenerator:
 
 
 if __name__ == "__main__":
+    
     argv = sys.argv
     argc = len(argv)
     if argc < 2:
@@ -1165,10 +1212,16 @@ if __name__ == "__main__":
     #     _ratio = 0.0
 
     # Validation option for graph contractions
+
+    
+
     deg_param = os.getenv("DEGREE")
     degree_threshold = 0 if deg_param is None else int(deg_param)
 
     txg = TransactionGenerator(_conf_file, _sim_name)
+    txg.writeDF=False
+    txg.writeMean=False
+    txg.writeSD=False 
     txg.load_account_list()  # Load account list CSV file
     txg.generate_normal_transactions()  # Load a parameter CSV file for the base transaction types
     if degree_threshold > 0:

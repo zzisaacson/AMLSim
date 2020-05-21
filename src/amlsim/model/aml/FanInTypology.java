@@ -96,8 +96,9 @@ public class FanInTypology extends AMLTypology {
                 //TODO: Decide if this should say bene or be orig.statType()
                 switch(orig.statType())
                 {
-                    case 0: amount = getRandomAmount(); break;
+                    case 0: amount = getRandomAmount();break;
                     case 1: amount = orig.getChiSquaredAmount(); break;
+                    case 2: amount = orig.getNormalDistAmount(); break;
                     default: System.err.println("Unrecognized stat type");break;
                 }
 

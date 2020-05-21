@@ -47,6 +47,7 @@ public class PeriodicalTransactionModel extends AbstractTransactionModel {
             {
                 case 0: amount = getTransactionAmount(); break;
                 case 1: amount = this.account.getChiSquaredAmount(); break;
+                case 2: amount = this.account.getNormalDistAmount(); break;
                 default: System.err.println("Unrecognized stat type");break;
             }
 

@@ -21,6 +21,7 @@ import amlsim.Alert;
 import amlsim.model.AbstractTransactionModel;
 
 import org.apache.commons.math3.distribution.ChiSquaredDistribution;
+import org.apache.commons.math3.distribution.NormalDistribution;
 
 
 /**
@@ -159,23 +160,28 @@ public abstract class AMLTypology extends AbstractTransactionModel {
         return alert.getSimulator().random.nextFloat() * (maxAmount - minAmount) + minAmount;
     }
 
+
+
     float getChiSquaredAmount(){
-        final int max = 13;
+        final int max=13;
         final float delta =0.1f;
 
         ChiSquaredDistribution chiDist = new ChiSquaredDistribution(this.account.df());
 
-        float rand = (float)Math.random();
-        
 
-        float f=0;
-
-        while(f<max&&chiDist.cumulativeProbability(f)<rand)
-        {
-            f+=delta;
-        }
-        f-=0.1f;
+        float f=(float)chiDist.sample();
         return Math.min(maxAmount,minAmount+((maxAmount-minAmount)/10)*f);
+
+       
+    }
+
+    float getNormalDistAmount(){
+        NormalDistribution normDist = new NormalDistribution(this.account.mean(),this.account.sd());
+       
+        float sample =  (float)normDist.sample();
+
+        
+        return Math.max(minAmount,Math.min(maxAmount,sample));
 
        
     }

@@ -17,6 +17,7 @@ public abstract class AbstractTransactionModel {
     public static final int MUTUAL = 3;
     public static final int FORWARD = 4;
     public static final int PERIODICAL = 5;
+    public static final int GATHER_SCATTER = 6;
 
     protected static Random rand = new Random(AMLSim.getSeed());
 //    private float transactionAmountRatio = 0.5F;  // The ratio of maximum total amount for transactions to current balance

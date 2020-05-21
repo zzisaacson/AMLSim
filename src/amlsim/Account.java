@@ -10,6 +10,7 @@ import sim.engine.Steppable;
 import java.util.*;
 
 import org.apache.commons.math3.distribution.ChiSquaredDistribution;
+import org.apache.commons.math3.distribution.NormalDistribution;
 
 public class Account extends Client implements Steppable {
 
@@ -31,6 +32,8 @@ public class Account extends Client implements Steppable {
 	private String bankID = "";  // Bank ID
 	private int statType = 0;
 	private int df =3; //default to 3 degrees of freedom unless params say otherwise
+	private float mean =1.5f*AMLSim.getSimProp().getNormalBaseTxAmount();
+	private float sd =mean/15;
 
     private Account prevOrig = null;  // Previous originator account
 	List<Alert> alerts = new ArrayList<>();
@@ -44,6 +47,8 @@ public class Account extends Client implements Steppable {
 
 	protected long startStep = 0;
 	protected long endStep = 0;
+
+	private char acctType ='I';
 
 
 	public Account(){
@@ -73,6 +78,7 @@ public class Account extends Client implements Steppable {
 			case AbstractTransactionModel.MUTUAL: this.model = new MutualTransactionModel(); break;
 			case AbstractTransactionModel.FORWARD: this.model = new ForwardTransactionModel(); break;
 			case AbstractTransactionModel.PERIODICAL: this.model = new PeriodicalTransactionModel();break;
+			case AbstractTransactionModel.GATHER_SCATTER: this.model = new GatherScatterTransactionModel();break;
 			default: System.err.println("Unknown model ID: " + modelID); this.model = new EmptyModel(); break;
 		}
 		this.model.setAccount(this);
@@ -118,20 +124,36 @@ public class Account extends Client implements Steppable {
 		return this.endStep;
 	}
 
-	void setSAR(boolean flag){
+	public void setSAR(boolean flag){
 		this.isSAR = flag;
 	}
 
-	void setStatType(int type){
+	public void setStatType(int type){
 		this.statType=type;
 	}
 
-	void setDF(int df){
+	public void setDF(int df){
 		this.df=df;
 	}
 
 	public int df(){
 		return df;
+	}
+
+	public void setMean(float mean){
+		this.mean=mean;
+	}
+
+	public float mean(){
+		return mean;
+	}
+
+	public void setSD(float sd){
+		this.sd=sd;
+	}
+
+	public float sd(){
+		return sd;
 	}
 
 	public int statType()
@@ -230,6 +252,12 @@ public class Account extends Client implements Steppable {
 		this.alerts.add(ag);
 	}
 
+	public void setAcctType(char c){
+		this.acctType=c;
+	}
+	public char acctType(){
+		return acctType;
+	}
 	/**
 	 * Perform transactions
 	 * @param state AMLSim object
@@ -332,23 +360,24 @@ public class Account extends Client implements Steppable {
 	}
 
 	public float getChiSquaredAmount(){
-        final int max = 13;
-        final float delta =0.1f;
 
         ChiSquaredDistribution chiDist = new ChiSquaredDistribution(df);
 
-        float rand = (float)Math.random();
         
 
-        float f=0;
-
-        while(f<max&&chiDist.cumulativeProbability(f)<rand)
-        {
-            f+=delta;
-        }
-        f-=0.1f;
+        float f= (float)chiDist.sample();
 		
         return AMLSim.getSimProp().getNormalBaseTxAmount()+(AMLSim.getSimProp().getNormalBaseTxAmount()/10)*f;
 	}
+
+	public float getNormalDistAmount(){
+
+        NormalDistribution normDist = new NormalDistribution(this.mean,this.sd);
+       
+        float sample =  (float)normDist.sample();
+        return Math.max(AMLSim.getSimProp().getNormalBaseTxAmount(),sample);
+
+       
+    }
        
 }

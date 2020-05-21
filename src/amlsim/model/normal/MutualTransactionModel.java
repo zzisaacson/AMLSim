@@ -40,9 +40,9 @@ public class MutualTransactionModel extends AbstractTransactionModel {
 
         switch(this.account.statType())
         {
-            case 0: amount = getTransactionAmount(); 
-            //System.out.println("UH OH SPAGET");break;
+            case 0: amount = getTransactionAmount(); break;
             case 1: amount = this.account.getChiSquaredAmount(); break;
+            case 2: amount = this.account.getNormalDistAmount(); break;
             default: System.err.println("Unrecognized stat type");break;
         }
 
