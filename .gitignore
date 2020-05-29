@@ -43,3 +43,4 @@ sample/*_*/
 outputs/
 !outputs/README.md
 
+/node_modules/
