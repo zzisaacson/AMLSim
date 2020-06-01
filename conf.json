@@ -17,7 +17,6 @@
     "transaction_model": 1,
     "margin_ratio": 0.1,
     "bank_id": "default",
-
     "cash_in": {
       "normal_interval": 100,
       "fraud_interval": 50,
@@ -86,4 +85,3 @@
     "diameter": "diameter.png"
   }
 }
-
